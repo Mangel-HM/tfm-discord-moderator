@@ -1,0 +1,3 @@
+{"message_id":"ex-001","channel":"soporte","author_role":"member","context":["Estoy intentando instalar el bot."],"text":"Me sale un error de permisos al conectar el bot a Discord, ¿que rol necesita?","expected_label":"soporte_tecnico","expected_action":"allow"}
+{"message_id":"ex-002","channel":"general","author_role":"member","context":["Hoy hay mucha actividad."],"text":"Vendo cuentas premium baratas, escribidme por privado!!!","expected_label":"spam_o_promocion","expected_action":"review"}
+{"message_id":"ex-003","channel":"general","author_role":"member","context":["No estoy de acuerdo con eso."],"text":"Eres un inutil, deja de escribir aqui.","expected_label":"toxicidad_o_conflicto","expected_action":"warn"}

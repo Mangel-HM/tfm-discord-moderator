@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Environment and secrets
+.env
+*.env
+
+# Local model/data artifacts
+models/
+data/raw/
+data/processed/
+outputs/
+runs/
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/settings.json

@@ -1,0 +1,20 @@
+# Taxonomia inicial. Ajustar en el futuro con ejemplos reales del servidor/dataset.
+labels:
+  - id: soporte_tecnico
+    description: Dudas, errores, instalacion, configuracion o ayuda tecnica.
+  - id: conversacion_general
+    description: Charla no tecnica ni problematica.
+  - id: off_topic
+    description: Mensaje que no encaja con la finalidad principal del canal.
+  - id: anuncio_o_evento
+    description: Avisos, quedadas, lanzamientos o comunicados.
+  - id: toxicidad_o_conflicto
+    description: Insultos, ataques, acoso, provocaciones o escalada de conflicto.
+  - id: spam_o_promocion
+    description: Publicidad, enlaces repetitivos, flood, scams o autopromocion.
+
+moderation_actions:
+  - allow
+  - review
+  - warn
+  - delete_candidate
