@@ -6,6 +6,9 @@ __pycache__/
 .ruff_cache/
 .venv/
 venv/
+.coverage
+coverage.xml
+htmlcov/
 
 # Environment and secrets
 .env
@@ -17,6 +20,10 @@ data/raw/
 data/processed/
 outputs/
 runs/
+logs/
+build/
+dist/
+*.egg-info/
 *.gguf
 *.safetensors
 *.bin

@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "tfm-discord-moderator"
 version = "0.1.0"
@@ -21,6 +25,10 @@ dev = [
   "ruff>=0.6.0",
   "mypy>=1.10.0"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["tfm_discord_moderator*"]
 
 [tool.ruff]
 line-length = 100

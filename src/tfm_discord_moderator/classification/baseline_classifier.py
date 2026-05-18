@@ -1,15 +1,12 @@
 from __future__ import annotations
 
 import json
-import re
 
 from pydantic import ValidationError
 
 from tfm_discord_moderator.classification.prompts import SYSTEM_PROMPT, build_classification_prompt
 from tfm_discord_moderator.domain.schemas import ClassificationResult, DiscordMessage
 from tfm_discord_moderator.inference.llama_cpp_client import LlamaCppClient
-
-_JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
 
 
 class BaselineClassifier:
@@ -33,11 +30,23 @@ class BaselineClassifier:
 
 def parse_classification_result(raw_output: str) -> ClassificationResult:
     """Parse and validate the first JSON object produced by the model."""
-    match = _JSON_OBJECT_RE.search(raw_output.strip())
-    if not match:
-        raise ValueError(f"Model did not return JSON. Output: {raw_output!r}")
+    payload = _extract_first_json_object(raw_output)
     try:
-        payload = json.loads(match.group(0))
         return ClassificationResult.model_validate(payload)
-    except (json.JSONDecodeError, ValidationError) as exc:
+    except ValidationError as exc:
         raise ValueError(f"Invalid classification JSON: {raw_output!r}") from exc
+
+
+def _extract_first_json_object(raw_output: str) -> dict:
+    decoder = json.JSONDecoder()
+    text = raw_output.strip()
+    for index, char in enumerate(text):
+        if char != "{":
+            continue
+        try:
+            payload, _ = decoder.raw_decode(text[index:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            return payload
+    raise ValueError(f"Model did not return JSON. Output: {raw_output!r}")

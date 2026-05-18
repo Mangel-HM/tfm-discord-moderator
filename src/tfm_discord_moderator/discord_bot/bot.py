@@ -20,7 +20,9 @@ def build_bot() -> discord.Client:
     intents.message_content = True
 
     client = discord.Client(intents=intents)
-    buffers: dict[int, deque[str]] = defaultdict(lambda: deque(maxlen=settings.max_context_messages))
+    buffers: dict[int, deque[str]] = defaultdict(
+        lambda: deque(maxlen=settings.max_context_messages)
+    )
 
     llm_client = LlamaCppClient(
         base_url=settings.llm_base_url,
@@ -71,13 +73,6 @@ def build_bot() -> discord.Client:
                     f"confidence={result.confidence:.2f}, risk={result.risk}.\n"
                     f"Razon: {result.rationale}"
                 )
-
-        if (
-            settings.auto_delete
-            and result.action == ModerationAction.DELETE_CANDIDATE
-            and result.confidence >= settings.classification_threshold
-        ):
-            await message.delete()
 
     return client
 

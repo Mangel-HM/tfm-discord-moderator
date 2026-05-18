@@ -19,9 +19,13 @@ async def main() -> None:
     sample_path = Path("data/samples/messages_sample.jsonl")
     for line in sample_path.read_text(encoding="utf-8").splitlines():
         item = json.loads(line)
-        message = DiscordMessage(**{k: item[k] for k in ["message_id", "channel", "author_role", "context", "text"]})
+        message_fields = {
+            key: item[key] for key in ["message_id", "channel", "author_role", "context", "text"]
+        }
+        message = DiscordMessage(**message_fields)
         result = await classifier.classify(message)
-        print(json.dumps({"message_id": message.message_id, **result.model_dump()}, ensure_ascii=False))
+        output = {"message_id": message.message_id, **result.model_dump()}
+        print(json.dumps(output, ensure_ascii=False))
 
 
 if __name__ == "__main__":
