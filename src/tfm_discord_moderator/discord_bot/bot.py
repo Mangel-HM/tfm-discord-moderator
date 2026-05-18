@@ -66,7 +66,7 @@ def build_bot() -> discord.Client:
 
         if settings.discord_mod_channel_id and result.action != ModerationAction.ALLOW:
             mod_channel = client.get_channel(settings.discord_mod_channel_id)
-            if mod_channel:
+            if isinstance(mod_channel, discord.abc.Messageable):
                 await mod_channel.send(
                     f"Revision sugerida para mensaje {message.id}: "
                     f"label={result.label}, action={result.action}, "

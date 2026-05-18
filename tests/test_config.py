@@ -22,7 +22,7 @@ def clean_settings_env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_env_example_loads_with_safe_defaults(clean_settings_env: None) -> None:
-    settings = Settings(_env_file=Path(".env.example"))
+    settings = Settings(_env_file=Path(".env.example"))  # type: ignore[call-arg]
 
     assert settings.llm_base_url == "http://127.0.0.1:8001/v1"
     assert settings.llm_model == "discord-qwen-local"

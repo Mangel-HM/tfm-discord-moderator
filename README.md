@@ -2,19 +2,31 @@
 
 Proyecto base para una prueba de concepto de clasificacion tematica y apoyo a moderacion en Discord con un LLM local servido por llama.cpp.
 
-## 1. Preparar entorno Python
+## 1. Preparar entorno
 
-En PowerShell, dentro del repositorio:
+Instala los prerrequisitos:
 
 ```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
-copy .env.example .env
+winget install --id astral-sh.uv -e
+winget install --id Casey.Just -e
+uv --version
+just --version
 ```
 
-La instalacion usa modo editable para que los cambios en `src/tfm_discord_moderator/` se reflejen sin reinstalar el paquete.
+Despues, dentro del repositorio:
+
+```powershell
+just dev
+```
+
+El proyecto usa `uv` para crear y sincronizar `.venv` con Python 3.11. La instalacion es editable, por lo que los cambios en `src/tfm_discord_moderator/` se reflejan sin reinstalar el paquete.
+
+`just dev` crea `.env` desde `.env.example` solo si no existe. Si ya tienes un `.env` local con tokens o rutas propias, no lo sobrescribe.
+
+Recomendacion: instala `uv` y `just` como herramientas del sistema, no solo dentro de `.venv`.
+Si `just` se ejecuta desde `.venv\Scripts\just.exe`, Windows puede bloquearlo mientras `uv sync`
+actualiza el entorno. El grupo `dev` incluye `rust-just` y `uv` para evitar que `uv` elimine
+esas herramientas durante la sincronizacion, pero la instalacion global sigue siendo el flujo mas limpio.
 
 ## 2. Configurar llama.cpp
 
@@ -49,20 +61,55 @@ cd C:\llama.cpp
 
 No guardes `.env`, tokens, modelos GGUF ni datasets privados dentro del repositorio.
 
-## 3. Verificar
+## 3. Recetas just
 
-Con el entorno Python activado:
+Las tareas habituales estan centralizadas en `justfile`:
 
 ```powershell
-python scripts/check_environment.py
-pytest
-python scripts/check_llama_server.py
-python scripts/classify_sample.py
+just --list
 ```
 
-`check_llama_server.py` y `classify_sample.py` requieren que `llama-server` este levantado.
+Recetas principales:
 
-## 4. Bot de Discord experimental
+| Receta | Uso |
+| --- | --- |
+| `just dev` | Sincroniza el entorno, prepara `.env` si falta y muestra los siguientes comandos. |
+| `just install` | Actualiza `uv.lock` y sincroniza dependencias con `uv`. |
+| `just check` | Ejecuta lint, typecheck y tests. |
+| `just lint` | Ejecuta `ruff check .`. |
+| `just typecheck` | Ejecuta `mypy src scripts tests`. |
+| `just test` | Ejecuta `pytest`. |
+| `just env` | Muestra informacion local de Python, SO y GPU. |
+| `just llama-check` | Comprueba el endpoint local de llama.cpp. |
+| `just sample` | Clasifica los ejemplos sinteticos de `data/samples/messages_sample.jsonl`. |
+| `just bot` | Ejecuta el bot de Discord en modo observacion. |
+
+`uv.lock` se versiona para que el entorno sea reproducible. Como decision del proyecto, `just install` actualiza dependencias y despues sincroniza el entorno.
+
+## 4. Verificar
+
+Para comprobar tests, lint y tipos:
+
+```powershell
+just check
+```
+
+Para revisar Python, sistema operativo y GPU/CUDA:
+
+```powershell
+just env
+```
+
+Con `llama-server` levantado:
+
+```powershell
+just llama-check
+just sample
+```
+
+`llama-check` y `sample` requieren que `llama-server` este levantado.
+
+## 5. Bot de Discord experimental
 
 El adaptador de Discord esta pensado para observacion y pruebas controladas. No ejecuta acciones automaticas de moderacion en esta fase.
 
@@ -72,10 +119,10 @@ El adaptador de Discord esta pensado para observacion y pruebas controladas. No 
 4. Manten `AUTO_DELETE=false`.
 
 ```powershell
-python -m tfm_discord_moderator.discord_bot.bot
+just bot
 ```
 
-## 5. Siguientes pasos
+## 6. Siguientes pasos
 
 - Definir el formato JSONL normalizado de datos.
 - Preparar un conjunto de evaluacion pequeno, anonimizado y versionable si procede.
