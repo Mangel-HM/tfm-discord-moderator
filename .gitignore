@@ -1,6 +1,6 @@
 # Python
 __pycache__/
-*.py[cod]
+*.py[codz]
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -8,8 +8,15 @@ __pycache__/
 .venv/
 venv/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
+.cache/
+.tox/
+.nox/
+.hypothesis/
+cover/
+.ipynb_checkpoints/
 
 # Environment and secrets
 .env

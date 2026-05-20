@@ -1,6 +1,6 @@
 import pytest
 
-from tfm_discord_moderator.evaluation.metrics import evaluate_labels
+from src.evaluation.metrics import evaluate_labels
 
 
 def test_evaluate_labels_returns_accuracy_and_confusion() -> None:

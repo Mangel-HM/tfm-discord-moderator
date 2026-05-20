@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import asyncio
 
-from tfm_discord_moderator.config import get_settings
-from tfm_discord_moderator.inference.llama_cpp_client import LlamaCppClient
+from src.config import get_settings
+from src.inference.llama_cpp_client import LlamaCppClient
 
 
 async def main() -> None:

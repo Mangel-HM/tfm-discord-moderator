@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from tfm_discord_moderator.domain.schemas import DiscordMessage
+from src.domain.schemas import DiscordMessage
 
 
 SYSTEM_PROMPT = """Eres un clasificador de mensajes de Discord para apoyo a moderacion.

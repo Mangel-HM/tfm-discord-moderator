@@ -4,9 +4,9 @@ import json
 
 from pydantic import ValidationError
 
-from tfm_discord_moderator.classification.prompts import SYSTEM_PROMPT, build_classification_prompt
-from tfm_discord_moderator.domain.schemas import ClassificationResult, DiscordMessage
-from tfm_discord_moderator.inference.llama_cpp_client import LlamaCppClient
+from src.classification.prompts import SYSTEM_PROMPT, build_classification_prompt
+from src.domain.schemas import ClassificationResult, DiscordMessage
+from src.inference.llama_cpp_client import LlamaCppClient
 
 
 class BaselineClassifier:

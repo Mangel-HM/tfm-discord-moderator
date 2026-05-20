@@ -1,7 +1,7 @@
 import pytest
 
-from tfm_discord_moderator.classification.baseline_classifier import parse_classification_result
-from tfm_discord_moderator.domain.schemas import ModerationAction
+from src.classification.baseline_classifier import parse_classification_result
+from src.domain.schemas import ModerationAction
 
 
 def test_parse_clean_json() -> None:

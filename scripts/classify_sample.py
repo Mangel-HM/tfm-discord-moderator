@@ -4,11 +4,11 @@ import asyncio
 import json
 from pathlib import Path
 
-from tfm_discord_moderator.classification.baseline_classifier import BaselineClassifier
-from tfm_discord_moderator.classification.prompts import load_label_taxonomy
-from tfm_discord_moderator.config import get_settings
-from tfm_discord_moderator.domain.schemas import DiscordMessage
-from tfm_discord_moderator.inference.llama_cpp_client import LlamaCppClient
+from src.classification.baseline_classifier import BaselineClassifier
+from src.classification.prompts import load_label_taxonomy
+from src.config import get_settings
+from src.domain.schemas import DiscordMessage
+from src.inference.llama_cpp_client import LlamaCppClient
 
 
 async def main() -> None:

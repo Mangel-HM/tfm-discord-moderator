@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from tfm_discord_moderator.config import Settings
+from src.config import Settings
 
 
 @pytest.fixture
@@ -22,7 +23,8 @@ def clean_settings_env(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_env_example_loads_with_safe_defaults(clean_settings_env: None) -> None:
-    settings = Settings(_env_file=Path(".env.example"))  # type: ignore[call-arg]
+    settings_factory: Any = Settings
+    settings = settings_factory(_env_file=Path(".env.example"))
 
     assert settings.llm_base_url == "http://127.0.0.1:8001/v1"
     assert settings.llm_model == "discord-qwen-local"
