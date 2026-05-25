@@ -55,6 +55,10 @@ llama-check:
 sample:
     @uv run python scripts/classify_sample.py
 
+# Convert a manually downloaded Jigsaw CSV to normalized JSONL.
+prepare-jigsaw INPUT OUTPUT SPLIT="train" *ARGS:
+    @uv run python scripts/prepare_jigsaw.py --input "{{INPUT}}" --output "{{OUTPUT}}" --split "{{SPLIT}}" {{ARGS}}
+
 # Run the Discord bot in observation mode.
 bot:
     @uv run python -m src.discord_bot.bot
