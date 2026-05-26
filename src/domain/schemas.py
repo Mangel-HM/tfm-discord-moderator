@@ -22,7 +22,7 @@ ALLOWED_SPLITS = ("train", "validation", "test")
 class ModerationAction(StrEnum):
     ALLOW = "allow"
     REVIEW = "review"
-    WARN = "warn"
+    WARN_CANDIDATE = "warn_candidate"
     DELETE_CANDIDATE = "delete_candidate"
 
 
@@ -105,3 +105,108 @@ class NormalizedExample(BaseModel):
         if "sin_riesgo" in self.risk_labels and len(self.risk_labels) > 1:
             raise ValueError("sin_riesgo cannot be combined with other risk labels")
         return self
+
+
+class BaselineClassification(BaseModel):
+    topic: str
+    risk_labels: list[str]
+    action: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    rationale: str = Field(max_length=500)
+
+    @field_validator("topic")
+    @classmethod
+    def topic_must_be_allowed(cls, value: str) -> str:
+        if value not in ALLOWED_TOPICS:
+            raise ValueError(f"topic must be one of: {', '.join(ALLOWED_TOPICS)}")
+        return value
+
+    @field_validator("risk_labels")
+    @classmethod
+    def risk_labels_must_be_allowed(cls, value: list[str]) -> list[str]:
+        if not value:
+            raise ValueError("risk_labels must contain at least one label")
+        invalid = [label for label in value if label not in ALLOWED_RISK_LABELS]
+        if invalid:
+            raise ValueError(f"risk_labels contains invalid labels: {', '.join(invalid)}")
+        return value
+
+    @field_validator("action")
+    @classmethod
+    def action_must_be_allowed(cls, value: str) -> str:
+        if value not in ALLOWED_ACTIONS:
+            raise ValueError(f"action must be one of: {', '.join(ALLOWED_ACTIONS)}")
+        return value
+
+    @model_validator(mode="after")
+    def sin_riesgo_must_not_be_combined(self) -> "BaselineClassification":
+        if "sin_riesgo" in self.risk_labels and len(self.risk_labels) > 1:
+            raise ValueError("sin_riesgo cannot be combined with other risk labels")
+        return self
+
+
+class BaselinePrediction(BaseModel):
+    id: str
+    source_dataset: str
+    text: str
+    gold_topic: str
+    gold_risk_labels: list[str]
+    gold_action: str
+    pred_topic: str | None = None
+    pred_risk_labels: list[str] = Field(default_factory=list)
+    pred_action: str | None = None
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    rationale: str | None = Field(default=None, max_length=500)
+    latency_ms: float
+    raw_response: str
+    parse_error: str | None = None
+
+    @classmethod
+    def from_example(
+        cls,
+        example: NormalizedExample,
+        *,
+        pred_topic: str,
+        pred_risk_labels: list[str],
+        pred_action: str,
+        confidence: float,
+        rationale: str,
+        latency_ms: float,
+        raw_response: str,
+    ) -> "BaselinePrediction":
+        return cls(
+            id=example.id,
+            source_dataset=example.source_dataset,
+            text=example.text,
+            gold_topic=example.topic,
+            gold_risk_labels=example.risk_labels,
+            gold_action=example.action,
+            pred_topic=pred_topic,
+            pred_risk_labels=pred_risk_labels,
+            pred_action=pred_action,
+            confidence=confidence,
+            rationale=rationale,
+            latency_ms=latency_ms,
+            raw_response=raw_response,
+        )
+
+    @classmethod
+    def from_parse_error(
+        cls,
+        example: NormalizedExample,
+        *,
+        latency_ms: float,
+        raw_response: str,
+        parse_error: str,
+    ) -> "BaselinePrediction":
+        return cls(
+            id=example.id,
+            source_dataset=example.source_dataset,
+            text=example.text,
+            gold_topic=example.topic,
+            gold_risk_labels=example.risk_labels,
+            gold_action=example.action,
+            latency_ms=latency_ms,
+            raw_response=raw_response,
+            parse_error=parse_error,
+        )

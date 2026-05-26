@@ -51,6 +51,10 @@ env:
 llama-check:
     @uv run python scripts/check_llama_server.py
 
+# Start the local llama.cpp OpenAI-compatible server using .env settings.
+llama-server:
+    @if (-not $env:LLAMA_SERVER_PATH) { throw "LLAMA_SERVER_PATH is missing in .env" }; if (-not $env:LLAMA_MODEL_PATH) { throw "LLAMA_MODEL_PATH is missing in .env" }; $alias = if ($env:LLAMA_MODEL_ALIAS) { $env:LLAMA_MODEL_ALIAS } else { "discord-qwen-local" }; $hostName = if ($env:LLAMA_HOST) { $env:LLAMA_HOST } else { "127.0.0.1" }; $port = if ($env:LLAMA_PORT) { $env:LLAMA_PORT } else { "8001" }; $ctxSize = if ($env:LLAMA_CTX_SIZE) { $env:LLAMA_CTX_SIZE } else { "8192" }; $gpuLayers = if ($env:LLAMA_N_GPU_LAYERS) { $env:LLAMA_N_GPU_LAYERS } else { "999" }; & $env:LLAMA_SERVER_PATH --model $env:LLAMA_MODEL_PATH --alias $alias --host $hostName --port $port --ctx-size $ctxSize --n-gpu-layers $gpuLayers
+
 # Classify the synthetic JSONL sample through the local model endpoint.
 sample:
     @uv run python scripts/classify_sample.py
@@ -58,6 +62,10 @@ sample:
 # Convert a manually downloaded Jigsaw CSV to normalized JSONL.
 prepare-jigsaw INPUT OUTPUT SPLIT="train" *ARGS:
     @uv run python scripts/prepare_jigsaw.py --input "{{INPUT}}" --output "{{OUTPUT}}" --split "{{SPLIT}}" {{ARGS}}
+
+# Run the normalized llama.cpp baseline over a JSONL file.
+baseline INPUT OUTPUT MAX_EXAMPLES="" *ARGS:
+    @uv run python scripts/run_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ if MAX_EXAMPLES != "" { "--max-examples " + MAX_EXAMPLES } else { "" } }} {{ARGS}}
 
 # Run the Discord bot in observation mode.
 bot:

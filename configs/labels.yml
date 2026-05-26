@@ -16,5 +16,5 @@ labels:
 moderation_actions:
   - allow
   - review
-  - warn
+  - warn_candidate
   - delete_candidate
