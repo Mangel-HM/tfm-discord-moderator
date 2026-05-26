@@ -94,6 +94,15 @@ def test_write_and_read_jsonl_preserves_data(tmp_path) -> None:
     assert [record.model_dump() for record in records] == [example.model_dump()]
 
 
+def test_write_jsonl_creates_parent_directories(tmp_path) -> None:
+    path = tmp_path / "processed" / "jigsaw" / "normalized.jsonl"
+    example = NormalizedExample.model_validate(valid_payload())
+
+    write_jsonl(path, [example])
+
+    assert read_jsonl(path)[0].model_dump() == example.model_dump()
+
+
 def test_validate_jsonl_accepts_valid_file(tmp_path) -> None:
     path = tmp_path / "normalized.jsonl"
     payload = valid_payload()

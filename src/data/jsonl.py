@@ -32,7 +32,9 @@ def read_jsonl(path: str | Path) -> list[NormalizedExample]:
 
 
 def write_jsonl(path: str | Path, records: Iterable[NormalizedRecord]) -> None:
-    with Path(path).open("w", encoding="utf-8", newline="\n") as file:
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8", newline="\n") as file:
         for record in records:
             example = NormalizedExample.model_validate(record)
             payload = example.model_dump()
