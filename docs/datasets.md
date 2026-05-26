@@ -27,6 +27,25 @@ Ejemplo de uso:
 just prepare-jigsaw data/raw/jigsaw/train.csv data/processed/jigsaw_train.jsonl train
 ```
 
+### Receta just para Jigsaw
+
+La receta del proyecto para ejecutar este conversor especifico de Jigsaw es:
+
+```powershell
+just prepare-jigsaw INPUT OUTPUT SPLIT
+```
+
+Argumentos:
+
+- `INPUT`: ruta del CSV original de Jigsaw.
+- `OUTPUT`: ruta del JSONL normalizado que se generara.
+- `SPLIT`: particion asignada a los registros generados: `train`, `validation` o `test`.
+
+Esta receta no es generica para cualquier dataset: asume las columnas y etiquetas del
+Jigsaw Toxic Comment Classification Challenge. Si se incorporan otros datasets, conviene
+crear recetas separadas como `prepare-civil-comments` o `prepare-toxicchat`, manteniendo
+cada conversor simple y trazable.
+
 Opciones utiles del script:
 
 ```powershell
