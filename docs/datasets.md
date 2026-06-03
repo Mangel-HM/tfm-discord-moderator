@@ -66,3 +66,30 @@ uv run python scripts/prepare_jigsaw.py `
   --split train `
   --skip-invalid-rows
 ```
+
+## Muestras balanceadas de JSONL normalizado
+
+Las muestras balanceadas o semi-balanceadas permiten inspeccionar mejor el comportamiento
+del baseline en etiquetas minoritarias como `odio_discriminacion`, `amenaza_violencia` o
+`sexual_nsfw`. Son utiles para analisis dirigido, pero no sustituyen la evaluacion sobre
+la distribucion natural del dataset.
+
+La utilidad generica para JSONL normalizado es:
+
+```powershell
+just sample-normalized INPUT OUTPUT MAX_PER_LABEL
+```
+
+Ejemplo:
+
+```powershell
+just sample-normalized data/processed/jigsaw_train_5000.jsonl data/processed/jigsaw_train_5000_balanced.jsonl 100 --include-label sin_riesgo --include-label insulto_toxicidad --include-label odio_discriminacion --include-label amenaza_violencia --include-label sexual_nsfw --shuffle-output
+```
+
+El script conserva todos los campos originales de cada `NormalizedExample`, mantiene ids
+unicos y valida el JSONL de salida antes de terminar. Si una etiqueta no tiene suficientes
+ejemplos para alcanzar `MAX_PER_LABEL`, se incluyen los disponibles y se reporta en el
+resumen por consola.
+
+Los JSONL generados a partir de datos reales son datos derivados y no deben subirse al
+repositorio.
