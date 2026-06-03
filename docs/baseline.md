@@ -78,4 +78,57 @@ Si el modelo no devuelve JSON valido o usa etiquetas fuera de la taxonomia, el p
 detiene por defecto. Con `--continue-on-error`, la fila se escribe con `parse_error` y sin
 prediccion validada.
 
+## Evaluacion automatica
+
+Las predicciones del baseline se evaluan offline, sin volver a llamar al modelo:
+
+```powershell
+just evaluate-baseline outputs/baseline_jigsaw_sample.jsonl outputs/baseline_metrics.json --ignore-topic
+```
+
+Comando equivalente sin `just`:
+
+```powershell
+uv run python scripts/evaluate_baseline.py `
+  --input outputs/baseline_jigsaw_sample.jsonl `
+  --output outputs/baseline_metrics.json `
+  --ignore-topic
+```
+
+El flag `--ignore-topic` es recomendable para Jigsaw porque el conversor asigna
+`topic="otro"` de forma artificial. Ese dataset no contiene anotacion tematica real, por lo
+que medir `topic_accuracy` en Jigsaw no aporta una comparacion valida.
+
+El archivo de metricas se escribe como JSON legible. Las metricas de clasificacion se
+calculan solo sobre predicciones parseadas correctamente; los fallos de JSON se miden aparte
+con `parse_errors` y `valid_json_rate`.
+
+Metricas principales:
+
+- `total_examples`: numero total de filas validas leidas del JSONL de predicciones.
+- `parsed_predictions`: predicciones con JSON valido y etiquetas aceptadas por la taxonomia.
+- `parse_errors`: filas generadas con `parse_error`; indican fallos de inferencia, parseo o
+  validacion de la salida del modelo.
+- `valid_json_rate`: proporcion de filas parseadas correctamente. Es importante porque el
+  baseline exige JSON valido antes de usar cualquier prediccion.
+- `action_accuracy`: exactitud de la accion recomendada (`allow`, `review`,
+  `warn_candidate`, `delete_candidate`). Resume si el sistema recomienda el mismo nivel de
+  actuacion que la etiqueta gold.
+- `risk_exact_match_accuracy`: proporcion de ejemplos donde el conjunto completo de
+  `risk_labels` coincide exactamente con el gold. Trata las etiquetas como multi-label, por
+  lo que el orden no importa.
+- `risk_labels`: resumen por etiqueta con verdaderos positivos, falsos positivos, falsos
+  negativos, `precision`, `recall` y `f1`. Esto permite ver que tipos de riesgo detecta bien
+  el baseline y cuales confunde u omite.
+- `macro_f1`: media de F1 por etiquetas con soporte gold. Sirve para comparar modelos sin
+  depender solo de las clases mas frecuentes.
+- `average_latency_ms`, `min_latency_ms`, `max_latency_ms`: resumen de latencia por ejemplo,
+  usando el campo `latency_ms` escrito por el baseline. Incluyen tambien filas con
+  `parse_error`, porque esas filas tambien consumieron tiempo de inferencia.
+- `topic_accuracy`: exactitud de `topic`, solo cuando no se usa `--ignore-topic`.
+
+Los resultados deben interpretarse como una medicion de la fase actual en ingles. La
+validacion en espanol queda fuera de esta evaluacion y se documentara mas adelante como
+trabajo futuro.
+
 Este baseline servira como comparacion frente al futuro modelo adaptado con LoRA.
