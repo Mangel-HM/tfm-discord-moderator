@@ -68,8 +68,8 @@ sample-normalized INPUT OUTPUT MAX_PER_LABEL *ARGS:
     @uv run python scripts/sample_normalized_dataset.py --input "{{INPUT}}" --output "{{OUTPUT}}" --max-per-label "{{MAX_PER_LABEL}}" {{ARGS}}
 
 # Run the normalized llama.cpp baseline over a JSONL file.
-baseline INPUT OUTPUT MAX_EXAMPLES="" *ARGS:
-    @uv run python scripts/run_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ if MAX_EXAMPLES != "" { "--max-examples " + MAX_EXAMPLES } else { "" } }} {{ARGS}}
+baseline INPUT OUTPUT *ARGS:
+    @uv run python scripts/run_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
 
 # Evaluate a baseline predictions JSONL file.
 evaluate-baseline INPUT OUTPUT *ARGS:
