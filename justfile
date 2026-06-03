@@ -67,6 +67,10 @@ prepare-jigsaw INPUT OUTPUT SPLIT="train" *ARGS:
 baseline INPUT OUTPUT MAX_EXAMPLES="" *ARGS:
     @uv run python scripts/run_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ if MAX_EXAMPLES != "" { "--max-examples " + MAX_EXAMPLES } else { "" } }} {{ARGS}}
 
+# Evaluate a baseline predictions JSONL file.
+evaluate-baseline INPUT OUTPUT *ARGS:
+    @uv run python scripts/evaluate_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
+
 # Run the Discord bot in observation mode.
 bot:
     @uv run python -m src.discord_bot.bot
