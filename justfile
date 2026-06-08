@@ -2,6 +2,7 @@ set shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 set dotenv-load := true
 export UV_CACHE_DIR := ".uv-cache"
 export PYTHONPATH := "."
+export PYTHONUTF8 := "1"
 ruff_targets := "src scripts tests pyproject.toml"
 
 default:
