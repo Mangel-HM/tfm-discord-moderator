@@ -71,6 +71,14 @@ sample-normalized INPUT OUTPUT MAX_PER_LABEL *ARGS:
 build-sft INPUT OUTPUT *ARGS:
     @uv run python scripts/build_sft_dataset.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
 
+# Train a LoRA smoke-test adapter from a chat/SFT JSONL file.
+train-lora TRAIN_FILE OUTPUT_DIR *ARGS:
+    @uv run python scripts/train_lora.py --train-file "{{TRAIN_FILE}}" --output-dir "{{OUTPUT_DIR}}" {{ARGS}}
+
+# Load a LoRA adapter and generate one test response.
+test-lora-adapter ADAPTER_DIR *ARGS:
+    @uv run python scripts/test_lora_adapter.py --adapter-dir "{{ADAPTER_DIR}}" {{ARGS}}
+
 # Run the normalized llama.cpp baseline over a JSONL file.
 baseline INPUT OUTPUT *ARGS:
     @uv run python scripts/run_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
