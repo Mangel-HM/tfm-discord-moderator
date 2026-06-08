@@ -67,6 +67,10 @@ prepare-jigsaw INPUT OUTPUT SPLIT="train" *ARGS:
 sample-normalized INPUT OUTPUT MAX_PER_LABEL *ARGS:
     @uv run python scripts/sample_normalized_dataset.py --input "{{INPUT}}" --output "{{OUTPUT}}" --max-per-label "{{MAX_PER_LABEL}}" {{ARGS}}
 
+# Build a chat/SFT JSONL file from normalized examples.
+build-sft INPUT OUTPUT *ARGS:
+    @uv run python scripts/build_sft_dataset.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
+
 # Run the normalized llama.cpp baseline over a JSONL file.
 baseline INPUT OUTPUT *ARGS:
     @uv run python scripts/run_baseline.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
