@@ -75,7 +75,7 @@ def generate_response(args: argparse.Namespace) -> str:
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name_or_path,
         trust_remote_code=True,
-        torch_dtype=get_torch_dtype(bf16=args.bf16, fp16=args.fp16),
+        dtype=get_torch_dtype(bf16=args.bf16, fp16=args.fp16),
         device_map="auto",
     )
     model = PeftModel.from_pretrained(model, args.adapter_dir)

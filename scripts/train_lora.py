@@ -203,7 +203,7 @@ def load_model(
     model = AutoModelForCausalLM.from_pretrained(
         model_name_or_path,
         trust_remote_code=True,
-        torch_dtype=get_torch_dtype(bf16=bf16, fp16=fp16),
+        dtype=get_torch_dtype(bf16=bf16, fp16=fp16),
         device_map="auto",
     )
     if gradient_checkpointing:
