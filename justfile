@@ -19,8 +19,8 @@ env-init:
 
 # Upgrade the lockfile and synchronize the development environment.
 install:
-    @uv lock --upgrade
-    @uv sync
+    @$env:UV_TORCH_BACKEND = "cu128"; uv lock --upgrade
+    @$env:UV_TORCH_BACKEND = "cu128"; uv sync
 
 # Run the complete local quality suite.
 check: lint typecheck test
