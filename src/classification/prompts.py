@@ -74,7 +74,7 @@ Return only valid JSON with exactly these fields:
 - "risk_labels": a non-empty list using only [{risk_labels}]
 - "action": one of [{actions}]
 - "confidence": a number between 0 and 1
-- "rationale": a short English explanation
+- "rationale": a short English explanation under 300 characters
 
 Rules:
 - If there is no moderation risk, use risk_labels = ["sin_riesgo"] and action = "allow".
