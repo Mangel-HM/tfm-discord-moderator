@@ -78,7 +78,7 @@ def test_rejects_invalid_split() -> None:
 
 def test_rejects_sin_riesgo_combined_with_other_label() -> None:
     payload = valid_payload()
-    payload["risk_labels"] = ["sin_riesgo", "spam_fraude"]
+    payload["risk_labels"] = ["sin_riesgo", "insulto_toxicidad"]
 
     with pytest.raises(ValidationError, match="sin_riesgo"):
         NormalizedExample.model_validate(payload)

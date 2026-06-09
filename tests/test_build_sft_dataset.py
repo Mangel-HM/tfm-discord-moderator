@@ -41,8 +41,8 @@ def assistant_payload(record: dict) -> dict:
 def test_build_sft_record_from_normalized_example() -> None:
     example = make_example(
         "jigsaw_000001",
-        text="Please stop posting the same link everywhere.",
-        risk_labels=["spam_fraude"],
+        text="Please stop insulting people in this channel.",
+        risk_labels=["insulto_toxicidad"],
     )
 
     record = build_sft_record(example)
@@ -50,11 +50,11 @@ def test_build_sft_record_from_normalized_example() -> None:
     assert record["messages"][0]["role"] == "system"
     assert record["messages"][1]["role"] == "user"
     assert record["messages"][2]["role"] == "assistant"
-    assert "Please stop posting the same link everywhere." in record["messages"][1]["content"]
-    assert "spam_fraude" in record["messages"][1]["content"]
+    assert "Please stop insulting people in this channel." in record["messages"][1]["content"]
+    assert "insulto_toxicidad" in record["messages"][1]["content"]
     assert assistant_payload(record) == {
         "action": "review",
-        "risk_labels": ["spam_fraude"],
+        "risk_labels": ["insulto_toxicidad"],
         "topic": "otro",
     }
     assert record["metadata"] == {
@@ -62,7 +62,7 @@ def test_build_sft_record_from_normalized_example() -> None:
         "source_dataset": "jigsaw",
         "split": "train",
         "topic": "otro",
-        "risk_labels": ["spam_fraude"],
+        "risk_labels": ["insulto_toxicidad"],
     }
 
 

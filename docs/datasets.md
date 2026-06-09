@@ -19,8 +19,6 @@ Mapeo de riesgo:
 - `obscene` -> `sexual_nsfw`
 - sin etiquetas activas -> `sin_riesgo`
 
-Jigsaw no cubre `spam_fraude`, por lo que esa etiqueta no se genera desde este dataset.
-
 Ejemplo de uso:
 
 ```powershell

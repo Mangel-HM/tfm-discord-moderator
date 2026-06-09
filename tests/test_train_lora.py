@@ -14,7 +14,7 @@ from scripts.train_lora import (
 )
 
 
-def write_sft_record(path: Path, *, message: str = "Please stop spamming.") -> None:
+def write_sft_record(path: Path, *, message: str = "Please stop insulting people.") -> None:
     payload = {
         "messages": [
             {"role": "system", "content": "Classify messages."},
@@ -24,7 +24,7 @@ def write_sft_record(path: Path, *, message: str = "Please stop spamming.") -> N
                 "content": json.dumps(
                     {
                         "topic": "otro",
-                        "risk_labels": ["spam_fraude"],
+                        "risk_labels": ["insulto_toxicidad"],
                         "action": "review",
                     }
                 ),
@@ -42,7 +42,7 @@ def test_read_sft_jsonl_reads_valid_chat_records(tmp_path: Path) -> None:
     dataset = read_sft_jsonl(train_file)
 
     assert len(dataset) == 1
-    assert dataset[0]["messages"][1]["content"] == "Please stop spamming."
+    assert dataset[0]["messages"][1]["content"] == "Please stop insulting people."
     assert dataset[0]["metadata"] == {"id": "example-1"}
 
 

@@ -45,11 +45,11 @@ def test_parse_json_inside_text() -> None:
 
 def test_parse_skips_invalid_brace_before_valid_json() -> None:
     raw = (
-        'Note {not json}\n{"topic":"otro","risk_labels":["spam_fraude"],'
-        '"action":"review","confidence":0.7,"rationale":"Promotional scam."}'
+        'Note {not json}\n{"topic":"otro","risk_labels":["insulto_toxicidad"],'
+        '"action":"review","confidence":0.7,"rationale":"Contains an insult."}'
     )
     result = parse_baseline_classification(raw)
-    assert result.risk_labels == ["spam_fraude"]
+    assert result.risk_labels == ["insulto_toxicidad"]
 
 
 def test_parse_rejects_missing_json() -> None:

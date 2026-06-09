@@ -51,7 +51,6 @@ Risk labels:
 - `odio_discriminacion`
 - `amenaza_violencia`
 - `sexual_nsfw`
-- `spam_fraude`
 
 Actions:
 

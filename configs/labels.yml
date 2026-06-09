@@ -10,8 +10,6 @@ labels:
     description: Avisos, quedadas, lanzamientos o comunicados.
   - id: toxicidad_o_conflicto
     description: Insultos, ataques, acoso, provocaciones o escalada de conflicto.
-  - id: spam_o_promocion
-    description: Publicidad, enlaces repetitivos, flood, scams o autopromocion.
 
 moderation_actions:
   - allow

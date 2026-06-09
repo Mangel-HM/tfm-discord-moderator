@@ -13,7 +13,6 @@ ALLOWED_RISK_LABELS = (
     "odio_discriminacion",
     "amenaza_violencia",
     "sexual_nsfw",
-    "spam_fraude",
 )
 ALLOWED_ACTIONS = ("allow", "review", "warn_candidate", "delete_candidate")
 ALLOWED_SPLITS = ("train", "validation", "test")
