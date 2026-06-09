@@ -2,6 +2,7 @@ set shell := ["powershell.exe", "-NoLogo", "-NoProfile", "-Command"]
 set dotenv-load := true
 export UV_CACHE_DIR := ".uv-cache"
 export PYTHONPATH := "."
+export PYTHONUTF8 := "1"
 ruff_targets := "src scripts tests pyproject.toml"
 
 default:
@@ -19,8 +20,8 @@ env-init:
 
 # Upgrade the lockfile and synchronize the development environment.
 install:
-    @uv lock --upgrade
-    @uv sync
+    @$env:UV_TORCH_BACKEND = "cu128"; uv lock --upgrade
+    @$env:UV_TORCH_BACKEND = "cu128"; uv sync
 
 # Run the complete local quality suite.
 check: lint typecheck test
@@ -70,6 +71,14 @@ sample-normalized INPUT OUTPUT MAX_PER_LABEL *ARGS:
 # Build a chat/SFT JSONL file from normalized examples.
 build-sft INPUT OUTPUT *ARGS:
     @uv run python scripts/build_sft_dataset.py --input "{{INPUT}}" --output "{{OUTPUT}}" {{ARGS}}
+
+# Train a LoRA smoke-test adapter from a chat/SFT JSONL file.
+train-lora TRAIN_FILE OUTPUT_DIR *ARGS:
+    @uv run python scripts/train_lora.py --train-file "{{TRAIN_FILE}}" --output-dir "{{OUTPUT_DIR}}" {{ARGS}}
+
+# Load a LoRA adapter and generate one test response.
+test-lora-adapter ADAPTER_DIR *ARGS:
+    @uv run python scripts/test_lora_adapter.py --adapter-dir "{{ADAPTER_DIR}}" {{ARGS}}
 
 # Run the normalized llama.cpp baseline over a JSONL file.
 baseline INPUT OUTPUT *ARGS:
