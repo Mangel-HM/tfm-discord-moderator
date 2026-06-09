@@ -77,8 +77,14 @@ train-lora TRAIN_FILE OUTPUT_DIR *ARGS:
     @uv run python scripts/train_lora.py --train-file "{{TRAIN_FILE}}" --output-dir "{{OUTPUT_DIR}}" {{ARGS}}
 
 # Load a LoRA adapter and generate one test response.
-test-lora-adapter ADAPTER_DIR *ARGS:
-    @uv run python scripts/test_lora_adapter.py --adapter-dir "{{ADAPTER_DIR}}" {{ARGS}}
+[arg("model_name_or_path", long="model-name-or-path")]
+[arg("message", long)]
+[arg("max_new_tokens", long="max-new-tokens")]
+[arg("temperature", long)]
+[arg("bf16", long, value="--bf16")]
+[arg("fp16", long, value="--fp16")]
+test-lora-adapter ADAPTER_DIR model_name_or_path message="" max_new_tokens="" temperature="" bf16="" fp16="":
+    @uv run python scripts/test_lora_adapter.py --adapter-dir "{{ADAPTER_DIR}}" --model-name-or-path "{{model_name_or_path}}" {{bf16}} {{fp16}} {{if message == "" { "" } else { "--message '" + replace(message, "'", "''") + "'" }}} {{if max_new_tokens == "" { "" } else { "--max-new-tokens " + max_new_tokens }}} {{if temperature == "" { "" } else { "--temperature " + temperature }}}
 
 # Run the normalized llama.cpp baseline over a JSONL file.
 baseline INPUT OUTPUT *ARGS:
