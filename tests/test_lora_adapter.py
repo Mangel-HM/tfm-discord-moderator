@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.test_lora_adapter import build_parser, build_test_messages
+from scripts.test_lora_adapter import DEFAULT_MESSAGE, build_parser, build_test_messages
 from src.domain.schemas import ALLOWED_ACTIONS, ALLOWED_RISK_LABELS, ALLOWED_TOPICS
 
 
@@ -35,3 +35,19 @@ def test_adapter_parser_rejects_incompatible_precision_flags() -> None:
                 "--fp16",
             ]
         )
+
+
+def test_adapter_parser_uses_toxicity_default_message() -> None:
+    parser = build_parser()
+
+    args = parser.parse_args(
+        [
+            "--adapter-dir",
+            "outputs/lora",
+            "--model-name-or-path",
+            "Qwen/Qwen3-0.6B",
+        ]
+    )
+
+    assert args.message == DEFAULT_MESSAGE
+    assert "killing yourself" in args.message

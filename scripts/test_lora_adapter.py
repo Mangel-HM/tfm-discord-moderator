@@ -7,7 +7,9 @@ from typing import Any
 from src.domain.schemas import ALLOWED_ACTIONS, ALLOWED_RISK_LABELS, ALLOWED_TOPICS
 
 
-DEFAULT_MESSAGE = "Please stop posting the same scam link in every channel."
+DEFAULT_MESSAGE = (
+    "Why are you still here? Can you not find anything more important to do, like killing yourself?"
+)
 
 
 def build_test_messages(message: str) -> list[dict[str, str]]:
