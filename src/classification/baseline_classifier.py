@@ -15,6 +15,7 @@ from src.domain.schemas import (
     BaselinePrediction,
     ClassificationResult,
     DiscordMessage,
+    NormalizedClassification,
     NormalizedExample,
 )
 from src.inference.llama_cpp_client import LlamaCppClient
@@ -88,6 +89,15 @@ def parse_baseline_classification(raw_output: str) -> BaselineClassification:
         return BaselineClassification.model_validate(payload)
     except ValidationError as exc:
         raise ValueError(f"Invalid baseline JSON: {raw_output!r}") from exc
+
+
+def parse_normalized_classification(raw_output: str) -> NormalizedClassification:
+    """Parse and validate a compact topic/risk/action model response."""
+    payload = _extract_first_json_object(raw_output)
+    try:
+        return NormalizedClassification.model_validate(payload)
+    except ValidationError as exc:
+        raise ValueError(f"Invalid normalized classification JSON: {raw_output!r}") from exc
 
 
 def parse_classification_result(raw_output: str) -> ClassificationResult:

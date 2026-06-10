@@ -47,6 +47,39 @@ El script carga el modelo base, aplica el adapter LoRA y genera una respuesta co
 prompt de clasificacion compatible con las etiquetas del proyecto. En esta fase no parsea
 ni evalua la salida.
 
+## Inferencia y evaluacion sobre JSONL normalizado
+
+Para evaluar un adapter ya entrenado sobre el conjunto normalizado reservado:
+
+```powershell
+just lora-adapter data/processed/jigsaw_eval_balanced.jsonl outputs/lora_jigsaw_eval_balanced_predictions.jsonl outputs/lora_jigsaw_5000 --model-name-or-path Qwen/Qwen3.5-2B --bf16 --continue-on-error
+```
+
+El script usa el modelo base de Transformers, carga encima el adapter con PEFT y escribe un
+JSONL compatible con el evaluador del baseline. La respuesta esperada del adapter sigue el
+formato SFT de tres campos: `topic`, `risk_labels` y `action`. Si el modelo no devuelve JSON
+valido o usa valores fuera de la taxonomia, con `--continue-on-error` la fila se conserva
+con `parse_error`.
+
+La evaluacion se hace sin volver a llamar al modelo:
+
+```powershell
+just evaluate-baseline outputs/lora_jigsaw_eval_balanced_predictions.jsonl outputs/lora_jigsaw_eval_balanced_metrics.json --ignore-topic
+```
+
+Para comparar contra una linea base justa, recalcula tambien el baseline con la taxonomia
+actual y el mismo conjunto de evaluacion:
+
+```powershell
+just baseline data/processed/jigsaw_eval_balanced.jsonl outputs/baseline_jigsaw_eval_balanced_predictions.jsonl --continue-on-error
+just evaluate-baseline outputs/baseline_jigsaw_eval_balanced_predictions.jsonl outputs/baseline_jigsaw_eval_balanced_metrics.json --ignore-topic
+```
+
+`topic` se mantiene como campo de salida para conservar el contrato del proyecto, pero en
+Jigsaw no debe tratarse como la metrica experimental principal. La comparacion principal
+debe centrarse en `risk_labels`, `action`, `macro_f1`, `risk_exact_match_accuracy` y
+`valid_json_rate`.
+
 ## Troubleshooting
 
 Si aparece CUDA out of memory:

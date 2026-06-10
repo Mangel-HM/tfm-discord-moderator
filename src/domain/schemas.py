@@ -144,6 +144,44 @@ class BaselineClassification(BaseModel):
         return self
 
 
+class NormalizedClassification(BaseModel):
+    topic: str
+    risk_labels: list[str]
+    action: str
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    rationale: str | None = Field(default=None, max_length=500)
+
+    @field_validator("topic")
+    @classmethod
+    def topic_must_be_allowed(cls, value: str) -> str:
+        if value not in ALLOWED_TOPICS:
+            raise ValueError(f"topic must be one of: {', '.join(ALLOWED_TOPICS)}")
+        return value
+
+    @field_validator("risk_labels")
+    @classmethod
+    def risk_labels_must_be_allowed(cls, value: list[str]) -> list[str]:
+        if not value:
+            raise ValueError("risk_labels must contain at least one label")
+        invalid = [label for label in value if label not in ALLOWED_RISK_LABELS]
+        if invalid:
+            raise ValueError(f"risk_labels contains invalid labels: {', '.join(invalid)}")
+        return value
+
+    @field_validator("action")
+    @classmethod
+    def action_must_be_allowed(cls, value: str) -> str:
+        if value not in ALLOWED_ACTIONS:
+            raise ValueError(f"action must be one of: {', '.join(ALLOWED_ACTIONS)}")
+        return value
+
+    @model_validator(mode="after")
+    def sin_riesgo_must_not_be_combined(self) -> "NormalizedClassification":
+        if "sin_riesgo" in self.risk_labels and len(self.risk_labels) > 1:
+            raise ValueError("sin_riesgo cannot be combined with other risk labels")
+        return self
+
+
 class BaselinePrediction(BaseModel):
     id: str
     source_dataset: str
@@ -168,8 +206,8 @@ class BaselinePrediction(BaseModel):
         pred_topic: str,
         pred_risk_labels: list[str],
         pred_action: str,
-        confidence: float,
-        rationale: str,
+        confidence: float | None,
+        rationale: str | None,
         latency_ms: float,
         raw_response: str,
     ) -> "BaselinePrediction":
