@@ -80,6 +80,27 @@ Jigsaw no debe tratarse como la metrica experimental principal. La comparacion p
 debe centrarse en `risk_labels`, `action`, `macro_f1`, `risk_exact_match_accuracy` y
 `valid_json_rate`.
 
+## Resultados Jigsaw balanced v2
+
+La ejecucion `outputs/lora_jigsaw_balanced_v2` entreno un adapter sobre
+`data/processed/jigsaw_train_balanced_v2_sft.jsonl` con `Qwen/Qwen3.5-2B`, LoRA `r=8`,
+`alpha=16`, `dropout=0.05`, `bf16`, batch por dispositivo 1, acumulacion 4 y 800 pasos.
+El `training_summary.json` registra 4245 ejemplos usados, perdida final aproximada
+`0.7353`, 1887M parametros totales y 5.46M parametros entrenables.
+
+La comparacion sobre `data/processed/jigsaw_eval_balanced_v2.jsonl` usa 302 ejemplos y
+`--ignore-topic`, porque Jigsaw conserva `topic="otro"`. Los resumenes principales son:
+
+- `outputs/lora_jigsaw_balanced_v2_metrics.json`: `macro_f1=0.7967`,
+  `risk_exact_match_accuracy=0.5033`, `action_accuracy=0.9106`,
+  `valid_json_rate=1.0`, sin errores de parseo.
+- `outputs/baseline_jigsaw_eval_balanced_v2_metrics.json`: `macro_f1=0.5069`,
+  `risk_exact_match_accuracy=0.4172`, `action_accuracy=0.7252`,
+  `valid_json_rate=1.0`, sin errores de parseo.
+
+Estos JSON de metricas y el directorio del adapter son artefactos generados. Deben quedarse
+fuera de Git y conservarse, si hace falta, mediante copias externas.
+
 ## Troubleshooting
 
 Si aparece CUDA out of memory:

@@ -24,3 +24,14 @@ de Git, normalmente bajo `data/processed/`, y no deben subirse al repositorio.
 
 La fase actual trabaja solo con datos en ingles. La validacion en espanol queda como
 trabajo futuro.
+
+## Artefacto Jigsaw balanced v2
+
+`data/processed/jigsaw_train_balanced_v2_sft.jsonl` es el dataset SFT/chat construido a
+partir del pool balanceado v2. Contiene 4245 conversaciones de entrenamiento con mensajes
+`system`, `user` y `assistant`; la respuesta del assistant es JSON valido con `topic`,
+`risk_labels` y `action`.
+
+Se uso como entrada de entrenamiento para `outputs/lora_jigsaw_balanced_v2`. Como el resto
+de datasets derivados, debe permanecer fuera de Git y conservarse solo como artefacto local
+o copia de seguridad.

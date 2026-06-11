@@ -91,3 +91,19 @@ resumen por consola.
 
 Los JSONL generados a partir de datos reales son datos derivados y no deben subirse al
 repositorio.
+
+### Artefactos Jigsaw balanceados v2
+
+La tanda `balanced_v2` se usa como snapshot reproducible de datos derivados para comparar
+baseline y adapter LoRA sobre la misma particion. Estos archivos se mantienen fuera de
+Git:
+
+- `data/processed/jigsaw_eval_balanced_v2.jsonl`: conjunto normalizado de evaluacion con
+  302 ejemplos. Conserva `topic="otro"` por venir de Jigsaw y se evalua principalmente por
+  `risk_labels`, `action` y JSON valido.
+- `data/processed/jigsaw_train_balanced_pool_v2.jsonl`: pool normalizado de entrenamiento
+  con 4398 ejemplos balanceados o semi-balanceados por etiquetas de riesgo. Sirve como
+  fuente previa para construir el dataset SFT.
+
+Estos ficheros no son datos fuente originales: derivan del CSV de Jigsaw y deben tratarse
+como artefactos locales o de backup, no como contenido versionable.
