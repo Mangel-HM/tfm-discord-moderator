@@ -51,6 +51,9 @@ addopts = [
   "--tb=short",
   "--strict-markers"
 ]
+filterwarnings = [
+  "ignore:'audioop' is deprecated and slated for removal in Python 3.13:DeprecationWarning:discord\\.player"
+]
 
 [tool.ty.src]
 include = ["src", "scripts", "tests"]
