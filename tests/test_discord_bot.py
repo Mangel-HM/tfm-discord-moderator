@@ -5,9 +5,14 @@ from typing import Any
 
 from src.config import Settings
 from src.discord_bot.bot import (
+    BufferedChannelMessage,
     ModerationDecision,
+    append_buffered_message,
     build_moderation_classifier,
+    get_context_text,
     format_moderation_notice,
+    remove_buffered_message,
+    remove_buffered_messages,
 )
 from src.domain.schemas import ClassificationResult, DiscordMessage, NormalizedClassification
 from src.domain.schemas import ModerationAction
@@ -124,3 +129,73 @@ def test_formats_moderation_notice_for_demo() -> None:
     assert "- Risks: insulto_toxicidad" in notice
     assert "- Topic: otro" in notice
     assert "- Latency: 1540 ms" in notice
+
+
+def test_deleted_messages_are_removed_from_context_buffer() -> None:
+    from collections import deque
+
+    buffer: deque[BufferedChannelMessage] = deque(maxlen=6)
+    first_run = [
+        (1, "user_a: hi everyone"),
+        (2, "user_a: I need help with my setup"),
+        (3, "user_a: this channel is for the demo"),
+        (4, "user_a: You are awful and nobody wants you here."),
+    ]
+    for message_id, text in first_run:
+        append_buffered_message(buffer, message_id=message_id, text=text)
+
+    remove_buffered_messages(buffer, {message_id for message_id, _ in first_run})
+
+    append_buffered_message(buffer, message_id=5, text="user_a: hi everyone")
+    append_buffered_message(buffer, message_id=6, text="user_a: I need help with my setup")
+    append_buffered_message(buffer, message_id=7, text="user_a: this channel is for the demo")
+
+    assert get_context_text(buffer) == [
+        "user_a: hi everyone",
+        "user_a: I need help with my setup",
+        "user_a: this channel is for the demo",
+    ]
+
+
+def test_single_delete_removes_only_matching_buffered_message() -> None:
+    from collections import deque
+
+    buffer: deque[BufferedChannelMessage] = deque(maxlen=6)
+    append_buffered_message(buffer, message_id=1, text="user_a: first")
+    append_buffered_message(buffer, message_id=2, text="user_b: second")
+    append_buffered_message(buffer, message_id=3, text="user_c: third")
+
+    remove_buffered_message(buffer, message_id=2)
+
+    assert get_context_text(buffer) == ["user_a: first", "user_c: third"]
+
+
+def test_bulk_delete_ignores_unknown_message_ids() -> None:
+    from collections import deque
+
+    buffer: deque[BufferedChannelMessage] = deque(maxlen=6)
+    append_buffered_message(buffer, message_id=1, text="user_a: first")
+    append_buffered_message(buffer, message_id=2, text="user_b: second")
+    append_buffered_message(buffer, message_id=3, text="user_c: third")
+
+    remove_buffered_messages(buffer, {2, 999})
+
+    assert get_context_text(buffer) == ["user_a: first", "user_c: third"]
+
+
+def test_context_buffer_still_respects_max_length() -> None:
+    from collections import deque
+
+    buffer: deque[BufferedChannelMessage] = deque(maxlen=3)
+    for message_id in range(5):
+        append_buffered_message(
+            buffer,
+            message_id=message_id,
+            text=f"user_a: message {message_id}",
+        )
+
+    assert get_context_text(buffer) == [
+        "user_a: message 2",
+        "user_a: message 3",
+        "user_a: message 4",
+    ]

@@ -29,6 +29,12 @@ class ModerationDecision:
 
 
 @dataclass(frozen=True)
+class BufferedChannelMessage:
+    message_id: int
+    text: str
+
+
+@dataclass(frozen=True)
 class TimedModerationDecision:
     decision: ModerationDecision
     latency_ms: float
@@ -120,6 +126,32 @@ def build_moderation_classifier(
     return LoraBotClassifier(classifier)
 
 
+def append_buffered_message(
+    buffer: deque[BufferedChannelMessage],
+    *,
+    message_id: int,
+    text: str,
+) -> None:
+    buffer.append(BufferedChannelMessage(message_id=message_id, text=text))
+
+
+def get_context_text(buffer: deque[BufferedChannelMessage]) -> list[str]:
+    return [entry.text for entry in buffer]
+
+
+def remove_buffered_message(buffer: deque[BufferedChannelMessage], *, message_id: int) -> None:
+    remove_buffered_messages(buffer, {message_id})
+
+
+def remove_buffered_messages(
+    buffer: deque[BufferedChannelMessage],
+    message_ids: set[int],
+) -> None:
+    kept = [entry for entry in buffer if entry.message_id not in message_ids]
+    buffer.clear()
+    buffer.extend(kept)
+
+
 def format_moderation_notice(
     *,
     channel_name: str,
@@ -158,7 +190,7 @@ def build_bot() -> discord.Client:
     intents.message_content = True
 
     client = discord.Client(intents=intents)
-    buffers: dict[int, deque[str]] = defaultdict(
+    buffers: dict[int, deque[BufferedChannelMessage]] = defaultdict(
         lambda: deque(maxlen=settings.max_context_messages)
     )
 
@@ -177,8 +209,12 @@ def build_bot() -> discord.Client:
             return
 
         channel_id = message.channel.id
-        context = list(buffers[channel_id])
-        buffers[channel_id].append(f"{message.author.display_name}: {message.content}")
+        context = get_context_text(buffers[channel_id])
+        append_buffered_message(
+            buffers[channel_id],
+            message_id=message.id,
+            text=f"{message.author.display_name}: {message.content}",
+        )
 
         domain_message = DiscordMessage(
             message_id=str(message.id),
@@ -216,6 +252,18 @@ def build_bot() -> discord.Client:
             mod_channel = client.get_channel(settings.discord_mod_channel_id)
             if isinstance(mod_channel, discord.abc.Messageable):
                 await mod_channel.send(notice)
+
+    @client.event
+    async def on_message_delete(message: discord.Message) -> None:
+        remove_buffered_message(buffers[message.channel.id], message_id=message.id)
+
+    @client.event
+    async def on_bulk_message_delete(messages: list[discord.Message]) -> None:
+        deleted_by_channel: dict[int, set[int]] = defaultdict(set)
+        for message in messages:
+            deleted_by_channel[message.channel.id].add(message.id)
+        for channel_id, deleted_ids in deleted_by_channel.items():
+            remove_buffered_messages(buffers[channel_id], deleted_ids)
 
     return client
 
