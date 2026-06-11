@@ -10,8 +10,9 @@ from time import perf_counter
 from typing import Any, Protocol
 
 from scripts.build_sft_dataset import SFT_SYSTEM_PROMPT, build_sft_user_prompt
-from scripts.train_lora import get_torch_dtype, positive_int
+from scripts.train_lora import positive_int
 from src.classification.baseline_classifier import parse_normalized_classification
+from src.classification.lora_classifier import get_torch_dtype, load_tokenizer_with_chat_template
 from src.data.jsonl import read_jsonl
 from src.domain.schemas import BaselinePrediction, NormalizedExample
 
@@ -128,22 +129,10 @@ def run_lora_adapter(
 
 
 def load_tokenizer(*, adapter_dir: str, model_name_or_path: str):
-    from transformers import AutoTokenizer
-
-    errors: list[str] = []
-    for candidate in (adapter_dir, model_name_or_path):
-        try:
-            tokenizer: Any = AutoTokenizer.from_pretrained(candidate, trust_remote_code=True)
-        except OSError as exc:
-            errors.append(f"{candidate}: {exc}")
-            continue
-        if tokenizer.pad_token is None:
-            tokenizer.pad_token = tokenizer.eos_token
-        if getattr(tokenizer, "chat_template", None) is None:
-            errors.append(f"{candidate}: tokenizer does not define chat_template")
-            continue
-        return tokenizer
-    raise ValueError("Could not load a tokenizer with chat_template. " + " | ".join(errors))
+    return load_tokenizer_with_chat_template(
+        adapter_dir=adapter_dir,
+        model_name_or_path=model_name_or_path,
+    )
 
 
 class TransformersLoraGenerator:
