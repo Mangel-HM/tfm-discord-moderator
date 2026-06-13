@@ -13,8 +13,9 @@ from src.classification.baseline_classifier import BaselineClassifier
 from src.classification.lora_classifier import LoraModerationClassifier
 from src.classification.prompts import load_label_taxonomy
 from src.config import Settings, get_settings
-from src.domain.schemas import ClassificationResult, DiscordMessage, NormalizedClassification
+from src.domain.schemas import DiscordMessage, NormalizedClassification
 from src.inference.llama_cpp_client import LlamaCppClient
+from src.presentation.labels import display_action, display_risk_labels, display_topic
 
 console = Console()
 
@@ -51,10 +52,10 @@ class BaselineBotClassifier:
 
     async def classify_message(self, message: DiscordMessage) -> TimedModerationDecision:
         started = perf_counter()
-        result = await self.classifier.classify(message)
+        result = await self.classifier.classify_normalized_message(message)
         latency_ms = (perf_counter() - started) * 1000
         return TimedModerationDecision(
-            decision=decision_from_baseline_result(result),
+            decision=decision_from_normalized_result(result),
             latency_ms=latency_ms,
         )
 
@@ -73,16 +74,6 @@ class LoraBotClassifier:
             decision=decision_from_normalized_result(result),
             latency_ms=latency_ms,
         )
-
-
-def decision_from_baseline_result(result: ClassificationResult) -> ModerationDecision:
-    return ModerationDecision(
-        topic=result.label,
-        risk_labels=[result.risk],
-        action=str(result.action),
-        confidence=result.confidence,
-        rationale=result.rationale,
-    )
 
 
 def decision_from_normalized_result(result: NormalizedClassification) -> ModerationDecision:
@@ -165,7 +156,6 @@ def format_moderation_notice(
         f"\n- Confidence: {decision.confidence:.2f}" if decision.confidence is not None else ""
     )
     rationale = f"\n- Rationale: {decision.rationale}" if decision.rationale else ""
-    risks = ", ".join(decision.risk_labels) if decision.risk_labels else "sin_riesgo"
     return f"""
 Suggested review
 
@@ -177,11 +167,24 @@ Message:
 Context used: {context_count} previous messages
 
 Result:
-- Suggested action: {decision.action}
-- Risks: {risks}
-- Topic: {decision.topic}
+- Suggested action: {display_action(decision.action)}
+- Risks: {display_risk_labels(decision.risk_labels)}
+- Topic: {display_topic(decision.topic)}
 - Latency: {latency_ms:.0f} ms{confidence}{rationale}
 """.strip()
+
+
+def format_allow_console_line(
+    *,
+    channel_name: str,
+    decision: ModerationDecision,
+    latency_ms: float,
+) -> str:
+    return (
+        f"[allow] #{channel_name} -> {display_topic(decision.topic)} "
+        f"risks={display_risk_labels(decision.risk_labels)} "
+        f"latency={latency_ms:.0f}ms"
+    )
 
 
 def build_bot() -> discord.Client:
@@ -241,9 +244,11 @@ def build_bot() -> discord.Client:
 
         if timed_decision.decision.action == "allow":
             console.print(
-                f"[allow] #{domain_message.channel} -> {timed_decision.decision.topic} "
-                f"risks={','.join(timed_decision.decision.risk_labels)} "
-                f"latency={timed_decision.latency_ms:.0f}ms"
+                format_allow_console_line(
+                    channel_name=domain_message.channel,
+                    decision=timed_decision.decision,
+                    latency_ms=timed_decision.latency_ms,
+                )
             )
             return
 

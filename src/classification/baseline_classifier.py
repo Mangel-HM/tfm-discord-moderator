@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from typing import Protocol
 
 from pydantic import ValidationError
 
 from src.classification.prompts import (
     BASELINE_SYSTEM_PROMPT,
     SYSTEM_PROMPT,
+    build_baseline_message_prompt,
     build_baseline_prompt,
     build_classification_prompt,
 )
@@ -18,13 +20,23 @@ from src.domain.schemas import (
     NormalizedClassification,
     NormalizedExample,
 )
-from src.inference.llama_cpp_client import LlamaCppClient
+
+
+class ChatClient(Protocol):
+    async def chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+    ) -> str:
+        pass
 
 
 class BaselineClassifier:
     """Prompting baseline: no fine-tuning, only structured instructions."""
 
-    def __init__(self, client: LlamaCppClient, taxonomy: dict):
+    def __init__(self, client: ChatClient, taxonomy: dict):
         self.client = client
         self.taxonomy = taxonomy
 
@@ -38,6 +50,18 @@ class BaselineClassifier:
             temperature=0.0,
         )
         return parse_classification_result(raw_output)
+
+    async def classify_normalized_message(
+        self, message: DiscordMessage
+    ) -> NormalizedClassification:
+        raw_output = await self.client.chat(
+            [
+                {"role": "system", "content": BASELINE_SYSTEM_PROMPT},
+                {"role": "user", "content": build_baseline_message_prompt(message)},
+            ],
+            temperature=0.0,
+        )
+        return parse_normalized_classification(raw_output)
 
     async def classify_example(
         self, example: NormalizedExample
