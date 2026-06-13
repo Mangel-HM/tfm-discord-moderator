@@ -13,7 +13,6 @@ dependencies = [
   "pydantic>=2.7.0",
   "pydantic-settings>=2.2.0",
   "python-dotenv>=1.0.1",
-  "PyYAML>=6.0.1",
   "rich>=13.7.0",
   "torch>=2.5.0",
   "transformers>=4.57.0",

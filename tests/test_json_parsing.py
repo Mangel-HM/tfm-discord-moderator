@@ -1,7 +1,25 @@
+import asyncio
+
 import pytest
 
-from src.classification.baseline_classifier import parse_baseline_classification
-from src.domain.schemas import BaselinePrediction, NormalizedExample
+from src.classification.baseline_classifier import BaselineClassifier, parse_baseline_classification
+from src.domain.schemas import BaselinePrediction, DiscordMessage, NormalizedExample
+
+
+class FakeChatClient:
+    def __init__(self, response: str):
+        self.response = response
+        self.messages: list[dict[str, str]] = []
+
+    async def chat(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+    ) -> str:
+        self.messages = messages
+        return self.response
 
 
 def valid_example() -> NormalizedExample:
@@ -75,6 +93,34 @@ def test_parse_rejects_sin_riesgo_combined_with_other_label() -> None:
 
     with pytest.raises(ValueError, match="Invalid baseline JSON"):
         parse_baseline_classification(raw)
+
+
+def test_baseline_classifier_classifies_discord_message_with_normalized_contract() -> None:
+    client = FakeChatClient(
+        '{"topic":"otro","risk_labels":["insulto_toxicidad"],"action":"review",'
+        '"confidence":0.82,"rationale":"Contains an insult."}'
+    )
+    classifier = BaselineClassifier(client)
+
+    result = asyncio.run(
+        classifier.classify_normalized_message(
+            DiscordMessage(
+                message_id="discord-1",
+                channel="general",
+                author_role="usuario_demo",
+                context=["user_a: hello"],
+                text="You are awful.",
+            )
+        )
+    )
+
+    assert result.topic == "otro"
+    assert result.risk_labels == ["insulto_toxicidad"]
+    assert result.action == "review"
+    assert result.confidence == 0.82
+    assert result.rationale == "Contains an insult."
+    assert '"topic"' in client.messages[1]["content"]
+    assert "user_a: hello" in client.messages[1]["content"]
 
 
 def test_create_valid_baseline_prediction() -> None:

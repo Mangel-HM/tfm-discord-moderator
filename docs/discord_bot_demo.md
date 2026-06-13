@@ -43,7 +43,30 @@ just bot
 
 En modo `lora`, el bot carga una sola vez el modelo base y el adapter local al arrancar.
 No hace falta levantar `llama.cpp` para esta demo. El backend `baseline` sigue disponible
-para la ruta antigua con `LlamaCppClient`.
+con `LlamaCppClient` y usa el mismo contrato normalizado que LoRA.
+
+## Salida interna y salida humana
+
+El bot mantiene IDs internos estables para clasificacion y evaluacion:
+
+- `topic`: `gaming`, `soporte`, `social_general`, `otro`;
+- `risk_labels`: `sin_riesgo`, `insulto_toxicidad`, `odio_discriminacion`,
+  `amenaza_violencia`, `sexual_nsfw`;
+- `action`: `allow`, `review`, `warn_candidate`, `delete_candidate`.
+
+Tanto `baseline` como `lora` se adaptan dentro del bot a la misma estructura conceptual:
+`topic`, `risk_labels` y `action`. El baseline puede anadir tambien `confidence` y
+`rationale` para la salida humana; LoRA puede seguir devolviendo solo los tres campos
+principales.
+
+El canal de moderacion y la consola muestran nombres legibles en ingles, por ejemplo
+`Insult/toxicity`, `Other` o `Review`. Este mapeo es solo una capa de presentacion: no
+cambia datasets JSONL, predicciones JSONL, metricas, prompts SFT/LoRA, validacion de
+schemas ni evaluacion experimental. Tampoco requiere reentrenar LoRA.
+
+La antigua ruta de clasificacion basada en `label` y `risk` no se usa en la demo. El
+comando de muestra del baseline tambien imprime JSON normalizado con `topic`,
+`risk_labels` y `action`.
 
 ## Que se ve durante la demo
 
@@ -61,6 +84,13 @@ Cuando la accion sugerida no es `allow`, el canal de moderacion recibe un aviso 
 - tema;
 - latencia aproximada.
 
+Las etiquetas visibles en ese aviso son human-readable en ingles. Los IDs internos se
+conservan para la logica del bot y para cualquier flujo experimental.
+
 La demo LoRA esta alineada con el entrenamiento y evaluacion en ingles sobre Jigsaw. Los
 mensajes en otros idiomas pueden procesarse tecnicamente, pero quedan fuera de la calidad
 medida para el adapter actual.
+
+Los resultados experimentales v2 no requieren regeneracion por esta limpieza: no se cambian
+`build_baseline_prompt(...)`, los datasets procesados, los esquemas de predicciones ni las
+metricas de evaluacion usadas para esos resultados.
