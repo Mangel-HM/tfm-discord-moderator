@@ -11,7 +11,6 @@ from rich.console import Console
 
 from src.classification.baseline_classifier import BaselineClassifier
 from src.classification.lora_classifier import LoraModerationClassifier
-from src.classification.prompts import load_label_taxonomy
 from src.config import Settings, get_settings
 from src.domain.schemas import DiscordMessage, NormalizedClassification
 from src.inference.llama_cpp_client import LlamaCppClient
@@ -92,7 +91,6 @@ def build_moderation_classifier(
     llama_client_factory: Any = LlamaCppClient,
     baseline_classifier_factory: Any = BaselineClassifier,
     lora_classifier_factory: Any = LoraModerationClassifier,
-    taxonomy_loader: Any = load_label_taxonomy,
 ) -> BotModerationClassifier:
     if settings.moderation_backend == "baseline":
         llm_client = llama_client_factory(
@@ -101,7 +99,7 @@ def build_moderation_classifier(
             model=settings.llm_model,
             timeout_seconds=settings.llm_timeout_seconds,
         )
-        classifier = baseline_classifier_factory(llm_client, taxonomy_loader())
+        classifier = baseline_classifier_factory(llm_client)
         return BaselineBotClassifier(classifier)
 
     if not settings.lora_model_name_or_path or not settings.lora_adapter_dir:

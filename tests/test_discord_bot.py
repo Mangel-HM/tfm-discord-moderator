@@ -27,9 +27,8 @@ class FakeLlamaClient:
 
 
 class FakeBaselineClassifier:
-    def __init__(self, client: FakeLlamaClient, taxonomy: dict):
+    def __init__(self, client: FakeLlamaClient):
         self.client = client
-        self.taxonomy = taxonomy
 
     async def classify_normalized_message(
         self, message: DiscordMessage
@@ -75,7 +74,6 @@ def test_builds_baseline_backend_without_lora_settings() -> None:
         settings,
         llama_client_factory=FakeLlamaClient,
         baseline_classifier_factory=FakeBaselineClassifier,
-        taxonomy_loader=lambda: {"labels": [], "moderation_actions": []},
     )
     result = asyncio.run(classifier.classify_message(make_message()))
 

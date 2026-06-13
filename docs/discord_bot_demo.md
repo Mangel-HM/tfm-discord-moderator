@@ -43,7 +43,7 @@ just bot
 
 En modo `lora`, el bot carga una sola vez el modelo base y el adapter local al arrancar.
 No hace falta levantar `llama.cpp` para esta demo. El backend `baseline` sigue disponible
-con `LlamaCppClient`.
+con `LlamaCppClient` y usa el mismo contrato normalizado que LoRA.
 
 ## Salida interna y salida humana
 
@@ -63,6 +63,10 @@ El canal de moderacion y la consola muestran nombres legibles en ingles, por eje
 `Insult/toxicity`, `Other` o `Review`. Este mapeo es solo una capa de presentacion: no
 cambia datasets JSONL, predicciones JSONL, metricas, prompts SFT/LoRA, validacion de
 schemas ni evaluacion experimental. Tampoco requiere reentrenar LoRA.
+
+La antigua ruta de clasificacion basada en `label` y `risk` no se usa en la demo. El
+comando de muestra del baseline tambien imprime JSON normalizado con `topic`,
+`risk_labels` y `action`.
 
 ## Que se ve durante la demo
 
@@ -86,3 +90,7 @@ conservan para la logica del bot y para cualquier flujo experimental.
 La demo LoRA esta alineada con el entrenamiento y evaluacion en ingles sobre Jigsaw. Los
 mensajes en otros idiomas pueden procesarse tecnicamente, pero quedan fuera de la calidad
 medida para el adapter actual.
+
+Los resultados experimentales v2 no requieren regeneracion por esta limpieza: no se cambian
+`build_baseline_prompt(...)`, los datasets procesados, los esquemas de predicciones ni las
+metricas de evaluacion usadas para esos resultados.

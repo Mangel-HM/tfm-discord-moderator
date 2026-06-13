@@ -100,7 +100,7 @@ def test_baseline_classifier_classifies_discord_message_with_normalized_contract
         '{"topic":"otro","risk_labels":["insulto_toxicidad"],"action":"review",'
         '"confidence":0.82,"rationale":"Contains an insult."}'
     )
-    classifier = BaselineClassifier(client, taxonomy={})
+    classifier = BaselineClassifier(client)
 
     result = asyncio.run(
         classifier.classify_normalized_message(
