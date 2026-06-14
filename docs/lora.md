@@ -1,9 +1,9 @@
-# Smoke test LoRA
+# LoRA
 
-Este documento describe una comprobacion minima de entrenamiento LoRA sobre el dataset
-SFT/chat generado por el proyecto. No es un entrenamiento final, no ajusta
-hiperparametros y no mide calidad de forma completa: solo comprueba que la ruta tecnica
-funciona de extremo a extremo.
+Este documento describe la ruta LoRA del proyecto: una comprobacion minima de entrenamiento,
+la inferencia del adapter sobre JSONL normalizado y la evaluacion balanceada v2. La primera
+parte sigue siendo un smoke test tecnico; los resultados v2 documentan una ejecucion
+experimental concreta, no un ajuste exhaustivo de hiperparametros.
 
 La linea base del proyecto se mantiene en `llama.cpp` con modelos GGUF. Para esta prueba,
 LoRA se entrena con Transformers, PEFT y TRL, y la prueba preliminar del adapter tambien

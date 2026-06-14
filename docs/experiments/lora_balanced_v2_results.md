@@ -29,9 +29,9 @@ Las etiquetas de riesgo usadas son:
 - `amenaza_violencia`
 - `sexual_nsfw`
 
-La etiqueta `spam_fraude` queda fuera del alcance porque Jigsaw no contiene esa categoria.
-Como Jigsaw procede de comentarios web y no incluye una taxonomia tematica de Discord,
-`topic` se conserva como campo estructural, pero no se usa como metrica principal.
+La taxonomia activa del experimento se limita a las etiquetas anteriores. Como Jigsaw
+procede de comentarios web y no incluye una taxonomia tematica de Discord, `topic` se
+conserva como campo estructural, pero no se usa como metrica principal.
 
 ## Particion experimental
 

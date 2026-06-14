@@ -118,8 +118,8 @@ Metricas principales:
   `risk_labels` coincide exactamente con el gold. Trata las etiquetas como multi-label, por
   lo que el orden no importa.
 - `risk_labels`: resumen por etiqueta con verdaderos positivos, falsos positivos, falsos
-  negativos, `precision`, `recall` y `f1`. Esto permite ver que tipos de riesgo detecta bien
-  el baseline y cuales confunde u omite.
+  negativos, `gold_support`, `predicted_support`, `precision`, `recall` y `f1`. Esto permite
+  ver que tipos de riesgo detecta bien el baseline y cuales confunde u omite.
 - `macro_f1`: media de F1 por etiquetas con soporte gold. Sirve para comparar modelos sin
   depender solo de las clases mas frecuentes.
 - `average_latency_ms`, `min_latency_ms`, `max_latency_ms`: resumen de latencia por ejemplo,
@@ -131,4 +131,5 @@ Los resultados deben interpretarse como una medicion de la fase actual en ingles
 validacion en espanol queda fuera de esta evaluacion y se documentara mas adelante como
 trabajo futuro.
 
-Este baseline servira como comparacion frente al futuro modelo adaptado con LoRA.
+Este baseline sirve como comparacion frente al adapter LoRA evaluado con el mismo contrato
+normalizado.

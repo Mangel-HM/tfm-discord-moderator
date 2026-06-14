@@ -70,5 +70,10 @@ riesgo.
 
 ## Conversion de datasets
 
-Los datasets reales se convertiran automaticamente mediante scripts futuros. No se deben
-normalizar manualmente registros reales ni guardar datasets privados dentro del repositorio.
+Los datasets reales deben convertirse mediante scripts especificos y trazables. Actualmente
+el proyecto incluye el conversor de Jigsaw (`scripts/prepare_jigsaw.py`, receta
+`just prepare-jigsaw`). Si se incorporan otros datasets, conviene crear conversores
+separados para mantener claro el mapeo de columnas y etiquetas.
+
+No se deben normalizar manualmente registros reales ni guardar datasets privados dentro del
+repositorio.
