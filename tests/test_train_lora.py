@@ -86,7 +86,7 @@ def test_maybe_limit_dataset_limits_records(tmp_path: Path) -> None:
 
 def test_build_training_summary_contains_required_keys(tmp_path: Path) -> None:
     summary = build_training_summary(
-        model_name_or_path="Qwen/Qwen3-0.6B",
+        model_name_or_path="test-model",
         train_file=tmp_path / "train.jsonl",
         output_dir=tmp_path / "adapter",
         max_examples=100,
@@ -124,7 +124,7 @@ def test_train_lora_parser_rejects_incompatible_precision_flags() -> None:
                 "--output-dir",
                 "outputs/lora",
                 "--model-name-or-path",
-                "Qwen/Qwen3-0.6B",
+                "test-model",
                 "--bf16",
                 "--fp16",
             ]
@@ -142,7 +142,7 @@ def test_train_lora_parser_rejects_non_positive_limits() -> None:
                 "--output-dir",
                 "outputs/lora",
                 "--model-name-or-path",
-                "Qwen/Qwen3-0.6B",
+                "test-model",
                 "--max-steps",
                 "0",
             ]

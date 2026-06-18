@@ -17,8 +17,9 @@ El script actual lee estos campos de cada registro:
 - `context`
 - `text`
 
-Campos antiguos como `expected_label` o `expected_action`, si aparecen en muestras
-sinteticas, son legado y no forman parte del contrato activo de clasificacion.
+Las muestras sinteticas de `data/samples/` deben mantenerse como entradas pequeñas
+para el bot o los scripts de comprobacion. Las etiquetas gold del contrato activo se
+documentan en datasets normalizados, no en este archivo de muestra.
 
 ## Formato normalizado activo
 
