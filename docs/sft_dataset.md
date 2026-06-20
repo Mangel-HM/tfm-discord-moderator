@@ -12,7 +12,7 @@ del modelo durante inferencia, no una etiqueta humana.
 Ejemplo:
 
 ```powershell
-just build-sft data/processed/jigsaw_train_5000.jsonl data/processed/jigsaw_train_5000_sft.jsonl --exclude-ids-from data/processed/jigsaw_eval_balanced.jsonl --shuffle --seed 42
+just build-sft data/processed/<train_normalized>.jsonl data/processed/<train_sft>.jsonl --exclude-ids-from data/processed/<eval_reserved>.jsonl --shuffle --seed 42
 ```
 
 `--exclude-ids-from` debe usarse para evitar mezclar ejemplos de entrenamiento con muestras

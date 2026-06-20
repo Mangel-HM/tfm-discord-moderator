@@ -21,7 +21,7 @@ Git. Usa rutas ignoradas como `outputs/`.
 Ejemplo:
 
 ```powershell
-just train-lora data/processed/jigsaw_train_5000_sft.jsonl outputs/lora_smoke --model-name-or-path <MODELO_BASE_TRANSFORMERS> --max-examples 100 --max-steps 20 --per-device-train-batch-size 1 --gradient-accumulation-steps 4 --bf16 --gradient-checkpointing
+just train-lora data/processed/<train_sft>.jsonl outputs/lora_smoke --model-name-or-path <MODELO_BASE_TRANSFORMERS> --max-examples 100 --max-steps 20 --per-device-train-batch-size 1 --gradient-accumulation-steps 4 --bf16 --gradient-checkpointing
 ```
 
 El script:
@@ -52,7 +52,7 @@ ni evalua la salida.
 Para evaluar un adapter ya entrenado sobre el conjunto normalizado reservado:
 
 ```powershell
-just lora-adapter data/processed/jigsaw_eval_balanced.jsonl outputs/lora_jigsaw_eval_balanced_predictions.jsonl outputs/lora_jigsaw_5000 --model-name-or-path Qwen/Qwen3.5-2B --bf16 --continue-on-error
+just lora-adapter data/processed/<eval_normalized>.jsonl outputs/<lora_predictions>.jsonl outputs/<adapter_dir> --model-name-or-path Qwen/Qwen3.5-2B --bf16 --continue-on-error
 ```
 
 El script usa el modelo base de Transformers, carga encima el adapter con PEFT y escribe un
@@ -64,15 +64,16 @@ con `parse_error`.
 La evaluacion se hace sin volver a llamar al modelo:
 
 ```powershell
-just evaluate-baseline outputs/lora_jigsaw_eval_balanced_predictions.jsonl outputs/lora_jigsaw_eval_balanced_metrics.json --ignore-topic
+just evaluate-baseline outputs/<lora_predictions>.jsonl outputs/<lora_metrics>.json --ignore-topic
 ```
 
 Para comparar contra una linea base justa, recalcula tambien el baseline con la taxonomia
 actual y el mismo conjunto de evaluacion:
 
 ```powershell
-just baseline data/processed/jigsaw_eval_balanced.jsonl outputs/baseline_jigsaw_eval_balanced_predictions.jsonl --continue-on-error
-just evaluate-baseline outputs/baseline_jigsaw_eval_balanced_predictions.jsonl outputs/baseline_jigsaw_eval_balanced_metrics.json --ignore-topic
+just baseline data/processed/<eval_normalized>.jsonl outputs/<baseline_predictions>.jsonl --continue-on-error
+
+just evaluate-baseline outputs/<baseline_predictions>.jsonl outputs/<baseline_metrics>.json --ignore-topic
 ```
 
 `topic` se mantiene como campo de salida para conservar el contrato del proyecto, pero en
