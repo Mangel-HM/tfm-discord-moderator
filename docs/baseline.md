@@ -33,15 +33,15 @@ http://127.0.0.1:8001/v1/chat/completions
 Ejemplo con una muestra pequena de Jigsaw ya normalizada:
 
 ```powershell
-just baseline data/processed/jigsaw_train_5000.jsonl outputs/baseline_jigsaw_sample.jsonl 25 --continue-on-error
+just baseline data/processed/<eval_normalized>.jsonl outputs/<baseline_predictions>.jsonl --max-examples 25 --continue-on-error
 ```
 
 Comando equivalente sin `just`:
 
 ```powershell
 uv run python scripts/run_baseline.py `
-  --input data/processed/jigsaw_train_5000.jsonl `
-  --output outputs/baseline_jigsaw_sample.jsonl `
+  --input data/processed/<eval_normalized>.jsonl `
+  --output outputs/<baseline_predictions>.jsonl `
   --max-examples 25 `
   --continue-on-error
 ```

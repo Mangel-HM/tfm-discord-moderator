@@ -1,6 +1,6 @@
 # Dataset SFT/chat
 
-Este formato prepara ejemplos normalizados para el futuro entrenamiento supervisado de
+Este formato prepara ejemplos normalizados para el entrenamiento supervisado de
 LoRA. El script no entrena modelos, no llama a `llama.cpp` y no genera predicciones: solo
 transforma etiquetas gold ya normalizadas en conversaciones de entrenamiento.
 

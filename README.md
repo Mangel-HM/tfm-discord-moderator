@@ -1,7 +1,6 @@
 # TFM Discord Moderator
 
-Prueba de concepto para clasificar mensajes de Discord por tematica y riesgo de moderacion
-usando un LLM local servido por llama.cpp.
+Prueba de concepto para clasificación estructurada y apoyo a la moderación en Discord mediante dos backends locales: una línea base por prompting con llama.cpp/GGUF y un modelo ajustado mediante LoRA con Transformers y PEFT.
 
 ## Requisitos
 
@@ -61,6 +60,8 @@ just bot          # ejecuta el bot en modo observacion
 ```
 
 `just llama-check` y `just sample` requieren `llama-server` levantado.
+
+La documentación de entrenamiento y evaluación LoRA está disponible en `docs/lora.md`.
 
 ## Bot de Discord
 
